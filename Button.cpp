@@ -1,12 +1,14 @@
 #pragma once
+
+#include <iostream>
 #include "button.h"
 
 Button::Button(std::wstring text, sf::Font& font, int textSize, sf::Color textColor,
-    sf::Vector2f buttonSize, sf::Vector2f position, sf::Color buttonColor) {
+    sf::Vector2f buttonSize, sf::Vector2f position) {
     button.setSize(buttonSize);
     button.setPosition(position);
-    button.setFillColor(buttonColor);
-    button.setOutlineColor(sf::Color::White);
+    button.setFillColor(originalColor);
+    button.setOutlineColor(sf::Color::Black);
     button.setOutlineThickness(2.0f);
 
     buttonText.setString(text);
@@ -41,3 +43,10 @@ std::wstring Button::getButtonText() {
     return buttonText.getString();
 }
 
+void Button::shadeButton() {
+    button.setFillColor(darkerColor);
+}
+
+void Button::setOriginalColor() {
+    button.setFillColor(originalColor);
+}

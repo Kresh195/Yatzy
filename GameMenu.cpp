@@ -6,7 +6,6 @@
 GameMenu::GameMenu(sf::RenderWindow& window, sf::Font& font, GameState& currentGameState)
     : window(window), menuFont(font), currentGameState(currentGameState) {
     sf::Color textColor(222, 181, 17);
-    sf::Color buttonColor = sf::Color::Black;
     int textSize = 55;
     sf::Vector2f buttonSize = sf::Vector2f(200, 50);
     float windowWidth = window.getSize().x;
@@ -14,13 +13,13 @@ GameMenu::GameMenu(sf::RenderWindow& window, sf::Font& font, GameState& currentG
     menuFont = font;
 
     sf::Vector2f playButtonPosition(windowWidth / 2 - 100, windowHeight * 3 / 4 - 100);
-    menuButtons.emplace_back(L"Играть", font, textSize, textColor, buttonSize, playButtonPosition, buttonColor);
+    menuButtons.emplace_back(L"Играть", font, textSize, textColor, buttonSize, playButtonPosition);
 
     sf::Vector2f rulesButtonPosition(windowWidth / 2 - 100, windowHeight * 3 / 4 - 35);
-    menuButtons.emplace_back(L"Правила", font, textSize, textColor, buttonSize, rulesButtonPosition, buttonColor);
+    menuButtons.emplace_back(L"Правила", font, textSize, textColor, buttonSize, rulesButtonPosition);
 
     sf::Vector2f exitButtonPosition(windowWidth / 2 - 100, windowHeight * 3 / 4 + 30);
-    menuButtons.emplace_back(L"Выход", font, textSize, textColor, buttonSize, exitButtonPosition, buttonColor);
+    menuButtons.emplace_back(L"Выход", font, textSize, textColor, buttonSize, exitButtonPosition);
 }
 
 GameMenu::~GameMenu() {
@@ -32,6 +31,17 @@ void GameMenu::handleInput() {
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed)
             window.close();
+        if (event.type == sf::Event::MouseMoved) {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            for (auto& button : menuButtons) {
+                if (button.getButton().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                    button.shadeButton();
+                } 
+                else {
+                    button.setOriginalColor();
+                }
+            }
+        }
         if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == sf::Mouse::Left) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
