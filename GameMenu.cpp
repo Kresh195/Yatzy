@@ -1,11 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include "Menu.h"
+#include "GameMenu.h"
 #include "Button.h"
-
-#include <locale>
-#include <codecvt>
 
 GameMenu::GameMenu(sf::RenderWindow& window, float windowWidth, float windowHeight, sf::Font& font)
     : window(window), menuFont(font) {

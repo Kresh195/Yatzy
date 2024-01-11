@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include "Button.h"
-#include "Menu.h"
+#include "GameMenu.h"
 
 int main()
 {
