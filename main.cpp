@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Button.h"
 #include "GameMenu.h"
+#include "GameState.h"
 
 int main()
 {
@@ -34,10 +35,29 @@ int main()
 
     menu.setMenuBackground(menuBackground);
 
+    GameState gameState;
+
     while (window.isOpen()) {
-        menu.handleInput();
-        menu.update();
-        menu.draw(menuBackground);
+        GameState::state currentGameState = gameState.getCurrentState();
+        switch (currentGameState) {
+        case 0:
+            menu.handleInput();
+            menu.update();
+            menu.draw(menuBackground);
+            break;
+        case 1:
+            //Игра
+            break;
+        case 2:
+            //Итоговый счёт
+            break;
+        case 3:
+            //Меню настроек
+            break;
+        case 4:
+            //Правила
+            break;
+        }
     }
 
     return 0;

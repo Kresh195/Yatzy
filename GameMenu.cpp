@@ -61,6 +61,7 @@ void GameMenu::update() {
 }
 
 void GameMenu::draw(sf::Texture menuBackground) {
+
     sf::Font nameFont;
     if (!nameFont.loadFromFile("fonts/Dust West Italic.otf")) {
         std::cerr << "Failed to load font!" << std::endl;
