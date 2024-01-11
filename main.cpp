@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include "Button.h"
 #include "GameMenu.h"
 #include "GameState.h"
 
@@ -31,11 +30,11 @@ int main()
 
     sf::RectangleShape background(sf::Vector2f(windowWidth, windowHeight));
 
-    GameMenu menu(window, windowWidth, windowHeight, nameFont);
+    GameState gameState;
 
+    GameMenu menu(window, nameFont, gameState);
     menu.setMenuBackground(menuBackground);
 
-    GameState gameState;
 
     while (window.isOpen()) {
         GameState::state currentGameState = gameState.getCurrentState();

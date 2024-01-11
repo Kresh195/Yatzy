@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Button.h"
+#include "GameState.h"
+
 
 class GameMenu {
 public:
-    GameMenu(sf::RenderWindow& window, float windowWidth, float windowHeight, sf::Font& font);
+    GameMenu(sf::RenderWindow& window, sf::Font& font, GameState& currentGameState);
 
     ~GameMenu();
 
@@ -19,11 +21,10 @@ public:
     void setMenuBackground(sf::Texture menuBackground);
 
 private:
-    float windowWidth;
-    float windowHeight;
     sf::RenderWindow& window;
     std::vector<Button> menuButtons;
     sf::Font& menuFont;
-    sf::Texture menuBackground;
+    sf::RectangleShape menuBackground;
+    GameState& currentGameState;
 };
 

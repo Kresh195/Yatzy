@@ -2,16 +2,15 @@
 
 #include <iostream>
 #include "GameMenu.h"
-#include "Button.h"
 
-GameMenu::GameMenu(sf::RenderWindow& window, float windowWidth, float windowHeight, sf::Font& font)
-    : window(window), menuFont(font) {
+GameMenu::GameMenu(sf::RenderWindow& window, sf::Font& font, GameState& currentGameState)
+    : window(window), menuFont(font), currentGameState(currentGameState) {
     sf::Color textColor(222, 181, 17);
     sf::Color buttonColor = sf::Color::Black;
     int textSize = 55;
     sf::Vector2f buttonSize = sf::Vector2f(200, 50);
-    this->windowWidth = windowWidth;
-    this->windowHeight = windowHeight;
+    float windowWidth = window.getSize().x;
+    float windowHeight = window.getSize().y;
     menuFont = font;
 
     sf::Vector2f playButtonPosition(windowWidth / 2 - 100, windowHeight * 3 / 4 - 100);
@@ -40,12 +39,13 @@ void GameMenu::handleInput() {
                     if (button.getButton().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
                         std::cout << "Button is pressed! " << mousePos.x << " " << mousePos.y << std::endl;
                         if (button.getButtonText() == L"Играть") {
-                            
+                            currentGameState.setCurrentState(GameState::inGame);
                         }
                         else if (button.getButtonText() == L"Правила") {
-                            
+                            currentGameState.setCurrentState(GameState::gameRules);
                         }
                         else if (button.getButtonText() == L"Выход") {
+                            std::cout << "Game closed." << std::endl;
                             window.close();  
                         }
                     }
@@ -61,16 +61,8 @@ void GameMenu::update() {
 }
 
 void GameMenu::draw(sf::Texture menuBackground) {
-
-    sf::Font nameFont;
-    if (!nameFont.loadFromFile("fonts/Dust West Italic.otf")) {
-        std::cerr << "Failed to load font!" << std::endl;
-    }
-    sf::RectangleShape background(sf::Vector2f(windowWidth, windowHeight));
-    background.setTexture(&menuBackground);
-
     window.clear();
-    window.draw(background);
+    window.draw(this->menuBackground);
     for (auto& button : menuButtons) {
         button.drawButton(window);
     }
@@ -82,5 +74,7 @@ void GameMenu::setMenuFont(sf::Font menuFont) {
 }
 
 void GameMenu::setMenuBackground(sf::Texture menuBackground) {
-    this->menuBackground = menuBackground;
+    sf::RectangleShape background(sf::Vector2f(window.getSize().x, window.getSize().y));
+    background.setTexture(&menuBackground);
+    this->menuBackground = background;
 }

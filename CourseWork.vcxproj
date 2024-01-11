@@ -140,6 +140,7 @@
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Dice.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GameMenu.cpp" />
@@ -147,6 +148,7 @@
   <ItemGroup>
     <ClInclude Include="Button.h" />
     <ClInclude Include="Dice.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="GameMenu.h" />
     <ClInclude Include="GameState.h" />
   </ItemGroup>
