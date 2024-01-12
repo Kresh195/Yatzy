@@ -5,7 +5,7 @@ class GameState
 public:
 	enum state {
 		gameMenu,
-		inGame,
+		Game,
 		finalScore,
 		options,
 		gameRules
