@@ -28,6 +28,7 @@ public:
 	void increaseScore(int value);
 private:
 	int score = 0;
+	int bonusSum = 0;
 	playerColors color;
 	int rollsLeft = 3;
 };
