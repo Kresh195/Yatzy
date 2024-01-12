@@ -6,7 +6,7 @@
 
 class GameMenu {
 public:
-    GameMenu(sf::RenderWindow& window, sf::Font& font, GameState& currentGameState);
+    GameMenu(sf::RenderWindow& window, sf::Font& font, sf::Color textColor, GameState& currentGameState);
 
     ~GameMenu();
 
@@ -26,5 +26,6 @@ private:
     sf::Font& menuFont;
     sf::RectangleShape menuBackground;
     GameState& currentGameState;
+    sf::Color textColor;
 };
 

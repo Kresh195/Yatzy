@@ -3,9 +3,8 @@
 #include <iostream>
 #include "GameMenu.h"
 
-GameMenu::GameMenu(sf::RenderWindow& window, sf::Font& font, GameState& currentGameState)
+GameMenu::GameMenu(sf::RenderWindow& window, sf::Font& font, sf::Color textColor, GameState& currentGameState)
     : window(window), menuFont(font), currentGameState(currentGameState) {
-    sf::Color textColor(222, 181, 17);
     int textSize = 55;
     sf::Vector2f buttonSize = sf::Vector2f(200, 50);
     float windowWidth = window.getSize().x;
@@ -49,7 +48,7 @@ void GameMenu::handleInput() {
                     if (button.getButton().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
                         std::cout << "Button is pressed! " << mousePos.x << " " << mousePos.y << std::endl;
                         if (button.getButtonText() == L"Играть") {
-                            currentGameState.setCurrentState(GameState::inGame);
+                            currentGameState.setCurrentState(GameState::Game);
                         }
                         else if (button.getButtonText() == L"Правила") {
                             currentGameState.setCurrentState(GameState::gameRules);
