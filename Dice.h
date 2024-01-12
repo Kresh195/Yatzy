@@ -3,15 +3,17 @@
 class Dice
 {
 public:
-	int getNumber() const;
+	int getValue() const;
+
+	void setLock(bool lock);
 
 	bool isLocked() const;
 
-	void setNumber(int number);
+	void changeLock();
 
-	void setLock(bool lock);
+	void rollDice();
 private:
-	int number;
-	bool lock = 0;
+	int value;
+	bool lock = false;
 };
 
