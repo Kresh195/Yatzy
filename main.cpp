@@ -21,7 +21,7 @@ int main()
         std::cerr << "Failed to load background!" << std::endl;
     }
     sf::Texture gameBackground;
-    if (!gameBackground.loadFromFile("media/табличка6.png")) {
+    if (!gameBackground.loadFromFile("media/game-background.png")) {
         std::cerr << "Failed to load background!" << std::endl;
     }
     sf::Texture rulesBackground;
