@@ -14,7 +14,6 @@ int main()
         return -1;
     }
     window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-    std::cout << window.getSize().x << " " << window.getSize().y << std::endl;
 
     sf::Texture menuBackground;
     if (!menuBackground.loadFromFile("media/menu.png")) {
