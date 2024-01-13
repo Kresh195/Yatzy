@@ -33,6 +33,7 @@ private:
 
     std::vector<Dice> diceSet;
     std::vector<sf::Texture> diceTextures;
+    std::vector<int> diceValues;
 
     sf::Font& gameFont;
     sf::RectangleShape gameBackground;
@@ -43,6 +44,7 @@ private:
     Player currentPlayer = Player(green);
 
     bool isTurnEnded = false;
+    bool isStarted = false;
 
     sf::Color textColor;
     sf::Text playerTurnText;

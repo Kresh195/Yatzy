@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "Game.h"
-#include "Yatzy.h"
+#include "CalculateScore.h"
 
 Game::Game(sf::RenderWindow& window, sf::Font& gameFont, sf::Color textColor, GameState& currentGameState)
 	: window(window), gameFont(gameFont), currentGameState(currentGameState) {
@@ -32,7 +32,6 @@ Game::Game(sf::RenderWindow& window, sf::Font& gameFont, sf::Color textColor, Ga
 		sf::Vector2f diceLockPosition(DicePosition.x + diceSize.x * 0.65, DicePosition.y + diceSize.y * 0.75);
 		diceLock.setFillColor(sf::Color(0, 0, 0, 190));
 		diceLock.setPosition(diceLockPosition);
-
 		diceLocks.emplace_back(diceLock);
 		diceButtons.emplace_back(diceSize, DicePosition, i+90);
 	}
@@ -81,11 +80,6 @@ Game::Game(sf::RenderWindow& window, sf::Font& gameFont, sf::Color textColor, Ga
 		players.emplace_back(color);
 	}
 
-	for (auto& player : players) {
-		std::cout << player.getPlayerColor() << std::endl;
-	}
-
-
 	playerTurnText = sf::Text(L"Ход зеленого игрока", gameFont, 75);
 	playerTurnText.setFillColor(textColor);
 	playerTurnText.setPosition(sf::Vector2f(windowWidth / 9, 15));
@@ -100,7 +94,6 @@ void Game::handleInput() {
 	while (window.pollEvent(event)) {
 		if (event.type == sf::Event::Closed)
 			window.close();
-
 		if (isTurnEnded) {
 			isTurnEnded = false;
 			for (auto& button : gameButtons) {
@@ -164,12 +157,12 @@ void Game::handleInput() {
 					if (button.getButton().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 						//std::cout << "Button is pressed! " << mousePos.x << " " << mousePos.y << std::endl;
 						int buttonID = button.getButtonID();
-						if ((buttonID > 0) && (buttonID <= 15 * playerCount) 
+						if ((buttonID > 0) && (buttonID <= 15 * playerCount)
 							&& currentPlayer.getRollsLeft() < 3 && !button.isClicked()) {
-							std::cout << buttonID % playerCount << " " << currentPlayerColor << std::endl;
+							//std::cout << buttonID % playerCount << " " << currentPlayerColor << std::endl;
 							if ((buttonID - 1) % playerCount == currentPlayerColor && (buttonID > 0)
 								&& (buttonID <= 15 * playerCount)) {
-								button.setText(std::to_wstring(buttonID), gameFont, 20, sf::Color::Magenta);
+								button.setText(std::to_wstring(buttonID), gameFont, 35, textColor);
 								button.click();
 								isTurnEnded = true;
 							}
@@ -182,6 +175,14 @@ void Game::handleInput() {
 									int diceScore = dice.getValue();
 									diceButtons[diceNumber].setButtonTexture(diceTextures[diceScore - 1]);
 									diceSet.emplace_back(dice);
+									if (isStarted) {
+										diceSet[diceNumber] = dice;
+									}
+									else {
+										diceSet.emplace_back(dice);
+										isStarted = true;
+									}
+									std::cout << "Кубик " << diceSet[diceNumber].getValue() << " ";
 								}
 							}
 							else {
@@ -191,8 +192,9 @@ void Game::handleInput() {
 										dice.rollDice();
 										int diceScore = dice.getValue();
 										diceButtons[diceNumber].setButtonTexture(diceTextures[diceScore - 1]);
-										/*diceSet[diceNumber] = ;*/
+										diceSet[diceNumber] = dice;
 									}
+									/*std::cout << "Кубик " << diceSet[diceNumber].getValue() << " ";*/
 								}
 							}
 							currentPlayer.rolled();
@@ -200,6 +202,23 @@ void Game::handleInput() {
 							if (currentPlayer.getRollsLeft() == 0) {
 								button.setActivity(false);
 							}
+							for (int i = 0; i < 5; i++) {
+								int value = diceSet[i].getValue();
+								std::cout << "value " << value << " ";
+								diceValues.emplace_back(value);
+							}
+							std::cout << std::endl << std::endl;
+							CalculateScore diceSetScore(diceValues);
+
+							std::cout << "3 of a kind = " << diceSetScore.getThreeOfAKindScore() << std::endl;
+							std::cout << "4 of a kind = " << diceSetScore.getFourOfAKindScore() << std::endl;
+							std::cout << "chance = " << diceSetScore.getChanceScore() << std::endl;
+							std::cout << "full house = " << diceSetScore.checkFullHouse() << std::endl;
+							std::cout << "small straight = " << diceSetScore.checkSmallStraight() << std::endl;
+							std::cout << "large straight = " << diceSetScore.checkLargeStraight() << std::endl;
+							std::cout << "YATZY = " << diceSetScore.checkYatzy() << std::endl;
+							diceValues.clear();
+							std::cout << std::endl << std::endl;
 						}
 					}
 				}
