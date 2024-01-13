@@ -26,6 +26,8 @@ public:
 	void rolled();
 
 	void increaseScore(int value);
+
+	void increaseBonusSum(int value);
 private:
 	int score = 0;
 	int bonusSum = 0;

@@ -28,6 +28,10 @@ void Player::increaseScore(int value) {
 	score += value;
 }
 
+void Player::increaseBonusSum(int value) {
+	bonusSum += value;
+}
+
 void Player::resetRolls() {
 	rollsLeft = 3;
 }
