@@ -24,6 +24,10 @@ public:
 
 	void setText(std::wstring text, sf::Font& font, int size, sf::Color color);
 
+	void setText(std::wstring text);
+
+	void setTextColor(sf::Color color);
+
 	void setOriginalColor();
 
 	void setButtonTexture(sf::Texture& buttonTexture);
@@ -51,4 +55,5 @@ private:
 	sf::Color darkerColor = sf::Color(0, 0, 0, 180);
 	int buttonID;
 	bool activity = true;
+	/*int cellScore;*/
 };
