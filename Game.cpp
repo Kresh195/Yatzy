@@ -19,7 +19,6 @@ Game::Game(sf::RenderWindow& window, sf::Font& gameFont, sf::Color textColor, Ga
 
 	sf::RectangleShape diceLock;
 	diceLock.setSize(diceLockSize);
-	/*diceLock.setSize(sf::Vector2f(diceSize.x * 0.9, diceSize.y * 0.9));*/
 	for (int i = 0; i < 5; i++) {
 		float y, x = windowWidth / 4 - 190 + 120 * i;
 		if (i % 2 == 1) {
@@ -54,30 +53,55 @@ Game::Game(sf::RenderWindow& window, sf::Font& gameFont, sf::Color textColor, Ga
 	float xCellCoord = 1108;
 	float yCellCoord = 104;
 	int cellID = 0;
-	for (int i = 0; i < 13; i++) {
-		for (int j = 0; j < 2; j++) {
+	for (int playerNumber = 0; playerNumber < playerCount; playerNumber++) {
+		for (int combinationCellNumber = 0; combinationCellNumber < combinationCount; combinationCellNumber++) {
 			cellID += 1;
 			sf::Vector2f cellPosition = sf::Vector2f(xCellCoord, yCellCoord);
 			Button tableCell(cellSize, cellPosition, cellID);
 			tableCell.editOriginalColor(sf::Color(0, 0, 0, 0));
 			tableCell.editDarkerColor(sf::Color(0, 0, 0, 80));
-			gameButtons.emplace_back(tableCell);
-			xCellCoord += 61;
+			tableCellButtons.emplace_back(tableCell);
+
+			yCellCoord += 34;
+			if (combinationCellNumber == 5) {
+				yCellCoord += 78;
+			}
+			else if (combinationCellNumber == 10) {
+				yCellCoord += 2;
+			}
 		}
-		if (i == 5 ) {
-			yCellCoord += 78;
-		}
-		else if (i == 10) {
-			yCellCoord += 2;
-		}
-		xCellCoord = 1108;
-		yCellCoord += 34;
+		yCellCoord = 104;
+		xCellCoord += 61;
 	}
-	
 
 	for (int i = 0; i < playerCount; i++) {
 		playerColors color = static_cast<playerColors>(i);
 		players.emplace_back(color);
+	}
+	currentPlayer = &players[currentPlayerColor];
+
+	xCellCoord = 1108;
+	for (int i = 0; i < 2; i++) {
+		yCellCoord = 315;
+		for (int j = 0; j < 3; j++) {
+			if (j == 2) {
+				yCellCoord = 626;
+				cellSize = sf::Vector2f(59, 57);
+			}
+			else {
+				cellSize = sf::Vector2f(59, 33);
+			}
+			sf::Vector2f tableTextPosition = sf::Vector2f(xCellCoord, yCellCoord);
+			Button tableText(cellSize, tableTextPosition);
+			tableText.setText(L"", gameFont, 35, textColor);
+			tableText.setActivity(false);
+			if (j != 1) {
+				tableText.setText(L"0");
+			}
+			yCellCoord += 34;
+			tableTexts.emplace_back(tableText);
+		}
+		xCellCoord += 61;
 	}
 
 	playerTurnText = sf::Text(L"Ход зеленого игрока", gameFont, 75);
@@ -94,6 +118,12 @@ void Game::handleInput() {
 	while (window.pollEvent(event)) {
 		if (event.type == sf::Event::Closed)
 			window.close();
+		if (gameRound == 13) { //конец игры
+			if (players[0].getScore() > players[1].getScore())
+				playerTurnText.setString(L"Победа зелёного игрока!");
+			else
+				playerTurnText.setString(L"Победа красного игрока!");
+		}
 		if (isTurnEnded) {
 			isTurnEnded = false;
 			for (auto& button : gameButtons) {
@@ -105,9 +135,11 @@ void Game::handleInput() {
 			for (auto& dice : diceSet) {
 				dice.setLock(false);
 			}
-			currentPlayer.resetRolls();
+			currentPlayer->resetRolls();
 			currentPlayerColor = static_cast<playerColors>((currentPlayerColor + 1) % playerCount);
-			currentPlayer = players[currentPlayerColor];
+			currentPlayer = &players[currentPlayerColor];
+			if (currentPlayerColor == 0) //конец игры
+				gameRound += 1;
 			switch (currentPlayerColor)
 			{
 			case green:
@@ -126,19 +158,17 @@ void Game::handleInput() {
 		}
 		if (event.type == sf::Event::MouseMoved) {
 			sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-			for (auto& button : gameButtons) {
+			for (auto& button : tableCellButtons) {
 				int buttonID = button.getButtonID();
-				if (buttonID > 0 && buttonID <= 15 * playerCount) {
-					if (button.isClicked() || currentPlayer.getRollsLeft() == 3) {
-						button.setActivity(false);
+				if (button.isClicked() || currentPlayer->getRollsLeft() == 3) {
+					button.setActivity(false);
+				}
+				else {
+					if ((buttonID - 1) / combinationCount == currentPlayerColor) {
+						button.setActivity(true);
 					}
 					else {
-						if ((buttonID - 1) % playerCount == currentPlayerColor) {
-							button.setActivity(true);
-						}
-						else {
-							button.setActivity(false);
-						}
+						button.setActivity(false);
 					}
 				}
 				if (button.getButton().getGlobalBounds().contains(mousePos.x, mousePos.y) && button.getActivity()) {
@@ -148,27 +178,52 @@ void Game::handleInput() {
 					button.setOriginalColor();
 				}
 			}
+			for (auto& button : gameButtons) {
+				if (button.getButton().getGlobalBounds().contains(mousePos.x, mousePos.y) && button.getActivity()) {
+					button.shadeButton();
+				}
+				else {
+					button.setOriginalColor();
+				}
+			}
+
 		}
 		if (event.type == sf::Event::MouseButtonPressed) {
 			if (event.mouseButton.button == sf::Mouse::Left) {
 				sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-				//std::cout << mousePos.x << " " << mousePos.y << std::endl;
-				for (auto& button : gameButtons) {
+				for (auto& button : tableCellButtons) {
 					if (button.getButton().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
-						//std::cout << "Button is pressed! " << mousePos.x << " " << mousePos.y << std::endl;
 						int buttonID = button.getButtonID();
-						if ((buttonID > 0) && (buttonID <= 15 * playerCount)
-							&& currentPlayer.getRollsLeft() < 3 && !button.isClicked()) {
-							//std::cout << buttonID % playerCount << " " << currentPlayerColor << std::endl;
-							if ((buttonID - 1) % playerCount == currentPlayerColor && (buttonID > 0)
-								&& (buttonID <= 15 * playerCount)) {
-								button.setText(std::to_wstring(buttonID), gameFont, 35, textColor);
-								button.click();
-								isTurnEnded = true;
+						if (currentPlayer->getRollsLeft() < 3 && !button.isClicked()
+							&& (buttonID - 1) / combinationCount == currentPlayerColor) {
+							button.setTextColor(textColor);
+							button.click();
+							int points = std::stoi(button.getButtonText());
+							currentPlayer->increaseScore(points);
+							if ((buttonID - 1) % combinationCount < 6) {
+								currentPlayer->increaseBonusSum(points);
+								tableTexts[0 + currentPlayerColor * 3].setText(std::to_wstring(currentPlayer->getBonusSum()));
+								if (currentPlayer->checkBonus()) {
+									tableTexts[1 + currentPlayerColor * 3].setText(std::to_wstring(35));
+									currentPlayer->increaseScore(35);
+									currentPlayer->recieveBonus();
+								}
+							}
+							tableTexts[2 + currentPlayerColor * 3].setText(std::to_wstring(currentPlayer->getScore()));
+							isTurnEnded = true;
+							for (auto& cellButton : tableCellButtons) {
+								if (!cellButton.isClicked()) {
+									cellButton.setText(L"");
+								}
 							}
 						}
+					}
+				}
+				for (auto& button : gameButtons) {
+					if (button.getButton().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+						int buttonID = button.getButtonID();
 						if (button.getButtonText() == L"Бросок" && button.getActivity()) {
-							if (currentPlayer.getRollsLeft() == 3) {
+							if (currentPlayer->getRollsLeft() == 3) {
 								for (int diceNumber = 0; diceNumber < 5; diceNumber++) {
 									Dice dice;
 									dice.rollDice();
@@ -182,7 +237,6 @@ void Game::handleInput() {
 										diceSet.emplace_back(dice);
 										isStarted = true;
 									}
-									std::cout << "Кубик " << diceSet[diceNumber].getValue() << " ";
 								}
 							}
 							else {
@@ -194,22 +248,32 @@ void Game::handleInput() {
 										diceButtons[diceNumber].setButtonTexture(diceTextures[diceScore - 1]);
 										diceSet[diceNumber] = dice;
 									}
-									/*std::cout << "Кубик " << diceSet[diceNumber].getValue() << " ";*/
 								}
 							}
-							currentPlayer.rolled();
-							std::cout << "Rolls left: " << currentPlayer.getRollsLeft() << std::endl;
-							if (currentPlayer.getRollsLeft() == 0) {
+							currentPlayer->rolled();
+							std::cout << "Rolls left: " << currentPlayer->getRollsLeft() << std::endl;
+							if (currentPlayer->getRollsLeft() == 0) {
 								button.setActivity(false);
 							}
 							for (int i = 0; i < 5; i++) {
 								int value = diceSet[i].getValue();
-								std::cout << "value " << value << " ";
 								diceValues.emplace_back(value);
 							}
-							std::cout << std::endl << std::endl;
 							CalculateScore diceSetScore(diceValues);
-
+							std::vector<int> DiceValuesPoints = diceSetScore.getDiceValuesPoints();
+							std::vector<int> combinationsPoints = diceSetScore.getCombinationsPoints();
+							for (int i = 0; i < combinationCount; i++) {
+								int cellID = i + currentPlayerColor * combinationCount;
+								if (!tableCellButtons[cellID].isClicked()) {
+									int points = combinationsPoints[i];
+									tableCellButtons[cellID].setText(std::to_wstring(points), gameFont, 35, sf::Color::Red);
+								}
+							}
+							int i = 1;
+							for (auto& valueSum : DiceValuesPoints) {
+								std::cout << "sum of " << i << " = " << valueSum << std::endl;
+								i++;
+							}
 							std::cout << "3 of a kind = " << diceSetScore.getThreeOfAKindScore() << std::endl;
 							std::cout << "4 of a kind = " << diceSetScore.getFourOfAKindScore() << std::endl;
 							std::cout << "chance = " << diceSetScore.getChanceScore() << std::endl;
@@ -217,24 +281,22 @@ void Game::handleInput() {
 							std::cout << "small straight = " << diceSetScore.checkSmallStraight() << std::endl;
 							std::cout << "large straight = " << diceSetScore.checkLargeStraight() << std::endl;
 							std::cout << "YATZY = " << diceSetScore.checkYatzy() << std::endl;
-							diceValues.clear();
 							std::cout << std::endl << std::endl;
+							diceValues.clear();
 						}
 					}
 				}
 				for (auto& button : diceButtons) {
-					if (button.getButton().getGlobalBounds().contains(mousePos.x, mousePos.y) && currentPlayer.getRollsLeft() != 3) {
+					if (button.getButton().getGlobalBounds().contains(mousePos.x, mousePos.y) && currentPlayer->getRollsLeft() != 3) {
 						int diceNumber = button.getButtonID() - 90;
 						diceSet[diceNumber].changeLock();
 						if (diceSet[diceNumber].isLocked()) {
 							diceButtons[1].getButton().setSize(sf::Vector2f(100, 100));
 							diceLocks[diceNumber].setTexture(&diceLockTexture);
-							std::cout << "Dice " << diceNumber + 1 << " locked!" << std::endl;
 
 						}
 						else {
 							diceButtons[1].getButton().setSize(sf::Vector2f(80, 80));
-							std::cout << "Dice " << diceNumber + 1 << " unlocked!" << std::endl;
 						}
 					}
 				}
@@ -255,12 +317,18 @@ void Game::draw(sf::Texture gameBackground){
 		button.drawButton(window);
 	}
 	for (int i = 0; i < 5; i++) {
-		if (currentPlayer.getRollsLeft() != 3 && diceSet[i].isLocked())
+		if (currentPlayer->getRollsLeft() != 3 && diceSet[i].isLocked())
 			window.draw(diceLocks[i]);
 	}
 	for (auto& button : gameButtons) {
-		if (!(button.getButtonID() == 111 && currentPlayer.getRollsLeft() == 0))
+		if (!(button.getButtonID() == 111 && currentPlayer->getRollsLeft() == 0))
 			button.drawButton(window);
+	}
+	for (auto& button : tableCellButtons) {
+		button.drawButton(window);
+	}
+	for (auto& tableText : tableTexts) {
+		tableText.drawButton(window);
 	}
 	window.display();
 }

@@ -41,7 +41,7 @@ private:
     int playerCount = 2;
     std::vector<Player> players;
     playerColors currentPlayerColor = green;
-    Player currentPlayer = Player(green);
+    Player* currentPlayer;
 
     bool isTurnEnded = false;
     bool isStarted = false;
@@ -49,4 +49,10 @@ private:
     sf::Color textColor;
     sf::Text playerTurnText;
     
+    int gameRound = 0;
+    const int combinationCount = 13;
+
+    std::vector<Button> tableCellButtons;
+    std::vector<Button> selectedCells;
+    std::vector<Button> tableTexts;
 };
