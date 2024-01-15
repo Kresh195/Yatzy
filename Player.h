@@ -21,6 +21,12 @@ public:
 
 	int getRollsLeft();
 
+	int getBonusSum();
+
+	bool checkBonus();
+
+	void recieveBonus();
+
 	void resetRolls();
 
 	void rolled();
@@ -33,4 +39,5 @@ private:
 	int bonusSum = 0;
 	playerColors color;
 	int rollsLeft = 3;
+	bool isBonusRecieved = false;
 };

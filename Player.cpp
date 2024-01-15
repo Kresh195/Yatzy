@@ -24,6 +24,21 @@ int Player::getRollsLeft() {
 	return rollsLeft;
 }
 
+int Player::getBonusSum() {
+	return bonusSum;
+}
+
+bool Player::checkBonus() {
+	if (bonusSum >= 63 && !isBonusRecieved) {
+		return true;
+	}
+	return false;
+}
+
+void Player::recieveBonus() {
+	isBonusRecieved = true;
+}
+
 void Player::increaseScore(int value) {
 	score += value;
 }
