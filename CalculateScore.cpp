@@ -17,29 +17,27 @@ CalculateScore::CalculateScore(std::vector<int>& values)
 
 void CalculateScore::clear() {
 	diceValueCounts.clear();
+	diceValuesPoints.clear();
 }
 
 CalculateScore::~CalculateScore() {
 
 }
 
-std::vector<int> CalculateScore::getValuesSums() {
-	std::vector<int> valueSums;
+std::vector<int> CalculateScore::getDiceValuesPoints() {
 	int valueSum;
 	for (int i = 0; i < 6; i++) {
 		valueSum = diceValueCounts[i] * (i + 1);
-		valueSums.emplace_back(valueSum);
+		diceValuesPoints.emplace_back(valueSum);
 	}
-	return valueSums;
+	return diceValuesPoints;
 }
 
 int CalculateScore::getThreeOfAKindScore() {
 	int threeOfAKindScore = 0;
 	for (int i = 0; i < 6; i++) {
 		if (diceValueCounts[i] >= 3) {
-			std::cout << "valueee " << diceValues[0] << std::endl;
 			for (auto& value : diceValues) {
-				/*std::cout << "value " << value << std::endl;*/
 				threeOfAKindScore += value;
 			}
 			break;
@@ -121,10 +119,16 @@ int CalculateScore::getChanceScore() {
 	return chanceScore;
 }
 
-void CalculateScore::nextTurn() {
-	/*turn += 1;*/
-}
-
-int CalculateScore::getTurn() {
-	return turn;
+std::vector<int> CalculateScore::getCombinationsPoints() {
+	for (int i = 0; i < 6; i++) {
+		combinationsPoints.emplace_back(diceValuesPoints[i]);
+	}
+	combinationsPoints.emplace_back(getThreeOfAKindScore());
+	combinationsPoints.emplace_back(getFourOfAKindScore());
+	combinationsPoints.emplace_back(checkFullHouse());
+	combinationsPoints.emplace_back(checkSmallStraight());
+	combinationsPoints.emplace_back(checkLargeStraight());
+	combinationsPoints.emplace_back(checkYatzy());
+	combinationsPoints.emplace_back(getChanceScore());
+	return combinationsPoints;
 }

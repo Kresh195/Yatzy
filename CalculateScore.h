@@ -11,7 +11,7 @@ public:
 
 	~CalculateScore();
 
-	std::vector<int> getValuesSums();
+	std::vector<int> getDiceValuesPoints();
 
 	int getThreeOfAKindScore();
 
@@ -27,22 +27,15 @@ public:
 
 	int getChanceScore();
 
-	int getTurn();
-
-	void nextTurn();
+	std::vector<int> getCombinationsPoints();
 
 	void clear();
 
-private:
-	std::vector<int>& diceValues;
-	std::vector<int> diceValueCounts;
-	int ones;
-	int twos;
-	int threes;
-	int fours;
-	int fives;
-	int sixes;
 
-	int turn = 1;
+private:
+	std::vector<int>& diceValues; //значения на кубиках
+	std::vector<int> diceValueCounts; //кол-во каждого значения на кубиках
+	std::vector<int> diceValuesPoints; // очки за суммы 1-6
+	std::vector<int> combinationsPoints; //очки за все комбинации
 };
 
