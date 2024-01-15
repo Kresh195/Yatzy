@@ -35,7 +35,7 @@ public:
 
 private:
 	std::vector<int>& diceValues;
-	std::vector<int> valueNumbers;
+	std::vector<int> diceValueCounts;
 	int ones;
 	int twos;
 	int threes;
